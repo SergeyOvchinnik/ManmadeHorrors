@@ -24,6 +24,10 @@ public class ImageWindow {
     }
     
     public void paintImage(GeneratedImage image) {
+    	frame.remove(drawingPanel);
+    	drawingPanel = new DrawingPanel(Mainer.IMAGE_WIDTH, Mainer.IMAGE_HEIGHT);
+        frame.add(drawingPanel);
+        frame.setVisible(true);
     	for(int y = 0; y < Mainer.IMAGE_HEIGHT; y++) {
 			for(int x = 0; x < Mainer.IMAGE_WIDTH; x++) {
 				for(int c = 0; c < 3; c++) {

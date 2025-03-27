@@ -1,7 +1,8 @@
+import java.util.Comparator;
 
 public class GeneratedImage {
 	public int[][][] pixels;
-	public int fitness;
+	public int fitness = -1;
 	
 	public GeneratedImage() {
 		pixels = new int[Mainer.IMAGE_HEIGHT][Mainer.IMAGE_WIDTH][3];
@@ -15,4 +16,7 @@ public class GeneratedImage {
 			}
 		}
 	}
+	
 }
+
+
