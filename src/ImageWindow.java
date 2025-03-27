@@ -8,7 +8,7 @@ public class ImageWindow {
     private DrawingPanel drawingPanel;
 
     public ImageWindow(int width, int height) {
-        frame = new JFrame("Pixel Drawing Application");
+        frame = new JFrame("Manmade Horrors");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(width, height);
         frame.setLocationRelativeTo(null);
@@ -21,6 +21,17 @@ public class ImageWindow {
 
     public void drawPixel(int x, int y, Color color) {
         drawingPanel.setPixel(x, y, color);
+    }
+    
+    public void paintImage(GeneratedImage image) {
+    	for(int y = 0; y < Mainer.IMAGE_HEIGHT; y++) {
+			for(int x = 0; x < Mainer.IMAGE_WIDTH; x++) {
+				for(int c = 0; c < 3; c++) {
+					drawPixel(x, y, new Color(image.pixels[y][x][0], image.pixels[y][x][1], image.pixels[y][x][2]));
+				}
+					
+			}
+		}
     }
 
     private class DrawingPanel extends JPanel {
