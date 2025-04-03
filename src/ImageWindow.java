@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 public class ImageWindow {
 
 	public static final boolean UPSCALE = true;
-	public static final int UPSCALE_FACTOR = 5;
+	public static final int UPSCALE_FACTOR = 20;
 	
     private JFrame frame;
     private DrawingPanel drawingPanel;

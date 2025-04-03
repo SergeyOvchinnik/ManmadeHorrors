@@ -2,16 +2,16 @@ import java.util.Random;
 
 public class Mainer {
 	
-	public static final int IMAGE_WIDTH = 100;
-	public static final int IMAGE_HEIGHT =100;
+	public static final int IMAGE_WIDTH = 20;
+	public static final int IMAGE_HEIGHT = 20;
 	public static final Random rng = new Random();
 	
 	public static final int POPULATION_SIZE = 100;
 	public static final int GENERATIONS = 10000;
 	public static final int ELITE = 10;
-	public static final int RANDOMS = 10;
+	public static final int RANDOMS = 0;
 	
-	public static final int DISPLAY_FREQUENCY = 5;
+	public static final int DISPLAY_FREQUENCY = 20;
 	
 	public static void main(String[] args) {
 		
@@ -109,7 +109,11 @@ public class Mainer {
 				rightDiff += Math.abs(image.pixels[y][x][0] - image.pixels[y][x+1][0]);
 				rightDiff += Math.abs(image.pixels[y][x][1] - image.pixels[y][x+1][1]);
 				rightDiff += Math.abs(image.pixels[y][x][2] - image.pixels[y][x+1][2]);
-				fitness += (topDiff + botDiff + leftDiff + rightDiff) / 4;
+				int topContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y-1][x][0] - image.pixels[y-1][x][1] - image.pixels[y-1][x][2]);
+				int botContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y+1][x][0] - image.pixels[y+1][x][1] - image.pixels[y+1][x][2]);
+				int leftContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y][x-1][0] - image.pixels[y][x-1][1] - image.pixels[y][x-1][2]);
+				int rightContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y][x+1][0] - image.pixels[y][x+1][1] - image.pixels[y][x+1][2]);
+				fitness += (topDiff + botDiff + leftDiff + rightDiff + topContrastDiff + botContrastDiff + leftContrastDiff + rightContrastDiff) / 8;
 			}
 		}
 		return fitness;
@@ -162,7 +166,7 @@ public class Mainer {
 		for(GeneratedImage image : population) {
 			fitnessSum += image.fitness;
 		}
-		int selection1 = rng.nextInt(fitnessSum);
+		int selection1 = rng.nextInt(fitnessSum); // TODO: fitness sum can become negative smh?
 		GeneratedImage image1 = population[0];
 		for(int i = 0; i < POPULATION_SIZE; i++) {
 			selection1 -= population[i].fitness;
