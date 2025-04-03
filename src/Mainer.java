@@ -2,14 +2,16 @@ import java.util.Random;
 
 public class Mainer {
 	
-	public static final int IMAGE_WIDTH = 200;
-	public static final int IMAGE_HEIGHT = 200;
+	public static final int IMAGE_WIDTH = 100;
+	public static final int IMAGE_HEIGHT =100;
 	public static final Random rng = new Random();
 	
 	public static final int POPULATION_SIZE = 100;
 	public static final int GENERATIONS = 10000;
 	public static final int ELITE = 10;
 	public static final int RANDOMS = 10;
+	
+	public static final int DISPLAY_FREQUENCY = 5;
 	
 	public static void main(String[] args) {
 		
@@ -39,8 +41,10 @@ public class Mainer {
 			sort(population);
 			
 			// Display the best individual in the current population
-			app.paintImage(population[0]);
-			System.out.println(population[0].fitness);
+			if(g % DISPLAY_FREQUENCY == 0) {
+				app.paintImage(population[0]);
+				System.out.println(population[0].fitness);
+			}
 			//sleep(1000);
 			
 			// Generate the next population
@@ -82,6 +86,66 @@ public class Mainer {
 	}
 	
 	public static int fitness(GeneratedImage image) {
+		return adjacentDiff(image);
+	}
+	
+	public static int adjacentDiff(GeneratedImage image) {
+		int fitness = 0;
+		for(int y = 1; y < Mainer.IMAGE_HEIGHT - 1; y++) {
+			for(int x = 1; x < Mainer.IMAGE_WIDTH - 1; x++) {
+				int topDiff = 0;
+				topDiff += Math.abs(image.pixels[y][x][0] - image.pixels[y-1][x][0]);
+				topDiff += Math.abs(image.pixels[y][x][1] - image.pixels[y-1][x][1]);
+				topDiff += Math.abs(image.pixels[y][x][2] - image.pixels[y-1][x][2]);
+				int botDiff = 0;
+				botDiff += Math.abs(image.pixels[y][x][0] - image.pixels[y+1][x][0]);
+				botDiff += Math.abs(image.pixels[y][x][1] - image.pixels[y+1][x][1]);
+				botDiff += Math.abs(image.pixels[y][x][2] - image.pixels[y+1][x][2]);
+				int leftDiff = 0;
+				leftDiff += Math.abs(image.pixels[y][x][0] - image.pixels[y][x-1][0]);
+				leftDiff += Math.abs(image.pixels[y][x][1] - image.pixels[y][x-1][1]);
+				leftDiff += Math.abs(image.pixels[y][x][2] - image.pixels[y][x-1][2]);
+				int rightDiff = 0;
+				rightDiff += Math.abs(image.pixels[y][x][0] - image.pixels[y][x+1][0]);
+				rightDiff += Math.abs(image.pixels[y][x][1] - image.pixels[y][x+1][1]);
+				rightDiff += Math.abs(image.pixels[y][x][2] - image.pixels[y][x+1][2]);
+				fitness += (topDiff + botDiff + leftDiff + rightDiff) / 4;
+			}
+		}
+		return fitness;
+	}
+	
+	public static int contrast(GeneratedImage image) {
+		int fitness = 0;
+		for(int y = 0; y < Mainer.IMAGE_HEIGHT; y++) {
+			for(int x = 0; x < Mainer.IMAGE_WIDTH; x++) {
+				int max = Math.max(Math.max(image.pixels[y][x][0], image.pixels[y][x][1]), image.pixels[y][x][2]);
+				int secondMax;
+				if(image.pixels[y][x][0] == max)
+					secondMax = Math.max(image.pixels[y][x][1], image.pixels[y][x][2]);
+				else if(image.pixels[y][x][1] == max)
+					secondMax = Math.max(image.pixels[y][x][0], image.pixels[y][x][2]);
+				else
+					secondMax = Math.max(image.pixels[y][x][0], image.pixels[y][x][1]);
+				fitness += max - secondMax;
+			}
+		}
+		return fitness;
+	}
+	
+	public static int brightness(GeneratedImage image) {
+		int fitness = 0;
+		for(int y = 0; y < Mainer.IMAGE_HEIGHT; y++) {
+			for(int x = 0; x < Mainer.IMAGE_WIDTH; x++) {
+				for(int c = 0; c < 3; c++) {
+					fitness += image.pixels[y][x][c];
+				}
+			}
+		}
+		return fitness;
+	}
+	
+	public static int darkness(GeneratedImage image) {
 		int fitness = IMAGE_WIDTH * IMAGE_HEIGHT * 3 * 255;
 		for(int y = 0; y < Mainer.IMAGE_HEIGHT; y++) {
 			for(int x = 0; x < Mainer.IMAGE_WIDTH; x++) {
@@ -149,6 +213,34 @@ public class Mainer {
 	}
 	
 	public static void mutation(GeneratedImage image) {
+		for(int i = 0; i < 100; i++)
+			onePixelChange(image);
+	}
+	
+	public static void onePixelChange(GeneratedImage image) {
+		int y = rng.nextInt(Mainer.IMAGE_HEIGHT);
+		int x = rng.nextInt(Mainer.IMAGE_WIDTH);
+		int originalRed = image.pixels[y][x][0];
+		int originalGreen = image.pixels[y][x][1];
+		int originalBlue = image.pixels[y][x][2];
+		int originalFitness = fitness(image);
+		int newFitness = originalFitness;
+		int count = 0;
+		while(newFitness <= originalFitness && count < 3) {
+			image.pixels[y][x][0] = rng.nextInt(256);
+			image.pixels[y][x][1] = rng.nextInt(256);
+			image.pixels[y][x][2] = rng.nextInt(256);
+			newFitness = fitness(image);
+			count++;
+		}
+		if(newFitness < originalFitness) {
+			image.pixels[y][x][0] = originalRed;
+			image.pixels[y][x][1] = originalGreen;
+			image.pixels[y][x][2] = originalBlue;
+		}
+	}
+	
+	public static void brightnessAdjustment(GeneratedImage image) {
 		int adjustment = rng.nextInt(11) - 5;
 		for(int y = 0; y < Mainer.IMAGE_HEIGHT; y++) {
 			for(int x = 0; x < Mainer.IMAGE_WIDTH; x++) {
