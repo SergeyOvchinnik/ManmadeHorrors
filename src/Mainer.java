@@ -35,7 +35,7 @@ public class Mainer {
 			}
 			
 			// Apply fitness adjustment to improve performance
-			fitnessAdjustment(population);
+			//fitnessAdjustment(population);
 			
 			// Sort the population
 			sort(population);
@@ -113,7 +113,7 @@ public class Mainer {
 				int botContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y+1][x][0] - image.pixels[y+1][x][1] - image.pixels[y+1][x][2]);
 				int leftContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y][x-1][0] - image.pixels[y][x-1][1] - image.pixels[y][x-1][2]);
 				int rightContrastDiff = Math.abs(image.pixels[y][x][0] + image.pixels[y][x][1] + image.pixels[y][x][2] - image.pixels[y][x+1][0] - image.pixels[y][x+1][1] - image.pixels[y][x+1][2]);
-				fitness += (topDiff + botDiff + leftDiff + rightDiff + topContrastDiff + botContrastDiff + leftContrastDiff + rightContrastDiff) / 8;
+				fitness += (topDiff + botDiff + leftDiff + rightDiff + topContrastDiff + botContrastDiff + leftContrastDiff + rightContrastDiff);
 			}
 		}
 		return fitness;
